@@ -14,48 +14,52 @@ import javax.imageio.ImageIO;
 
 import Base.PanelJuego;
 import Base.Pantalla;
+import Base.Sprite;
 import Pantallas.PantallaJuego;
 
-public class PantallaInicial implements Pantalla{
+public class PantallaGanador implements Pantalla {
 	PanelJuego panelJuego;
-
+	
+	// Variables para trabajar la imagen
 	BufferedImage imagenFondo;
 	Image imagenRescalada;
-
+	
+	// Variables para trabajar el color de letras con parpadeos
 	Color colorLetra;
 	Font fuenteIncial;
 	int contadorColorFrames = 0;
 	static final int cambioColorInicio = 10;
 
-	public PantallaInicial(PanelJuego panelJuego) {
+	// Variables para usar "Botones" de jugar de nuevo o cerrar
+	Sprite botonJugarDeNuevo;
+	Sprite botonSalir;
+	
+	
+	public PantallaGanador(PanelJuego panelJuego) {
 		super();
 		this.panelJuego = panelJuego;
 	}
 
 	@Override
 	public void inicializarPantalla() {
-		
-		
 		try {
-			imagenFondo = ImageIO.read(new File("ImagenesSpaceInvaders/PantallaPrincipal.PNG"));
+			imagenFondo = ImageIO.read(new File("imagenes/galaxia.jpg"));
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		fuenteIncial = new Font("Arial", Font.BOLD, 20);
 		colorLetra = Color.YELLOW;
+		reescalarImagen();
 	}
 
 	@Override
 	public void pintarPantalla(Graphics g) {
-		g.setColor(Color.black);
-		g.fillRect(0, 0, panelJuego.getWidth(), panelJuego.getHeight());
-
 		g.drawImage(imagenRescalada, 0, 0, null);
 		g.setFont(fuenteIncial);
 		g.setColor(colorLetra);
-		g.drawString("Vamos a jugar", panelJuego.getWidth() / 2 - 95, panelJuego.getHeight() / 2);
-		g.drawString("Pulsa para Jugar", panelJuego.getWidth() / 2 - 100, panelJuego.getHeight() / 2 + 40);
+		g.drawString("Cerrar", panelJuego.getWidth() / 2 + 250, panelJuego.getHeight() / 2+400);
+		g.drawString("Pulsa para Jugar de nuevo", panelJuego.getWidth() / 2 - 400, panelJuego.getHeight() / 2 + 400);
 
 	}
 
@@ -83,17 +87,24 @@ public class PantallaInicial implements Pantalla{
 
 	@Override
 	public void pulsarRaton(MouseEvent e) {
-		PantallaJuego pantallaJuego = new PantallaJuego(panelJuego);
-		pantallaJuego.inicializarPantalla();
-		panelJuego.setPantallaActual(pantallaJuego);
+		if (e.getX()== botonJugarDeNuevo.getPosX() && e.getY() ==  botonJugarDeNuevo.getPosY()) {
+			PantallaJuego pantallaJuego = new PantallaJuego(panelJuego);
+			pantallaJuego.inicializarPantalla();
+			panelJuego.setPantallaActual(pantallaJuego);
+		} else if (e.getX() == botonSalir.getPosX()&& e.getY() ==  botonSalir.getPosY()) {
+			System.exit(0);
+		}
 
 	}
 
 	@Override
 	public void redimensionarPantalla(ComponentEvent e) {
+		reescalarImagen();
+
+	}
+	private void reescalarImagen() {
 		imagenRescalada = imagenFondo.getScaledInstance(panelJuego.getWidth(), panelJuego.getHeight(),
 				Image.SCALE_SMOOTH);
-
 	}
 
 }

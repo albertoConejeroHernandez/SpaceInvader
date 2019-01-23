@@ -2,7 +2,6 @@ package Base;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -17,8 +16,6 @@ import java.awt.Image;
  */
 public class Sprite {
 
-	static int velocidadXBloque;
-	
 	private BufferedImage buffer;
 	private Color color = Color.BLUE;
 	// Variables de dimensión
@@ -36,19 +33,15 @@ public class Sprite {
 	private Image imagenSpriteMarcianoReescalado;
 	// contador de rebotes del sprite
 	static int contador = 0;
-	
+
 	/**
 	 * Constructor simple para un Sprite sin imagen y sin velocidad.
 	 * 
-	 * @param ancho
-	 *            Ancho que ocupa el Sprite (en pixels)
-	 * @param alto
-	 *            Altura que ocupa el Sprite (en pixels)
-	 * @param posX
-	 *            posición horizontal del sprite en el mundo.
-	 * @param posY
-	 *            posición vertical del Sprite en el mundo. El origen se sitúa en
-	 *            la parte superior.
+	 * @param ancho Ancho que ocupa el Sprite (en pixels)
+	 * @param alto  Altura que ocupa el Sprite (en pixels)
+	 * @param posX  posición horizontal del sprite en el mundo.
+	 * @param posY  posición vertical del Sprite en el mundo. El origen se sitúa
+	 *              en la parte superior.
 	 */
 	public Sprite(int ancho, int alto, int posX, int posY, String rutaImagen) {
 		this.ancho = ancho;
@@ -62,19 +55,13 @@ public class Sprite {
 	/**
 	 * Constructor para un Sprite sin imagen.
 	 * 
-	 * @param ancho
-	 *            Ancho que ocupa el Sprite (en pixels)
-	 * @param alto
-	 *            Altura que ocupa el Sprite (en pixels)
-	 * @param posX
-	 *            posición horizontal del sprite en el mundo.
-	 * @param posY
-	 *            posición vertical del Sprite en el mundo. El origen se sitúa en
-	 *            la parte superior.
-	 * @param velocidadX
-	 *            velocidad horizontal del Sprite.
-	 * @param velocidadY
-	 *            velocidad vertical del Sprite.
+	 * @param ancho      Ancho que ocupa el Sprite (en pixels)
+	 * @param alto       Altura que ocupa el Sprite (en pixels)
+	 * @param posX       posición horizontal del sprite en el mundo.
+	 * @param posY       posición vertical del Sprite en el mundo. El origen se
+	 *                   sitúa en la parte superior.
+	 * @param velocidadX velocidad horizontal del Sprite.
+	 * @param velocidadY velocidad vertical del Sprite.
 	 */
 	public Sprite(int ancho, int alto, int posX, int posY, int velocidadX, int velocidadY, String rutaImagen) {
 		this.ancho = ancho;
@@ -109,25 +96,18 @@ public class Sprite {
 	/**
 	 * Método para mover el Sprite por el mundo.
 	 * 
-	 * @param anchoMundo
-	 *            ancho del mundo sobre el que se mueve el Sprite
-	 * @param altoMundo
-	 *            alto del mundo sobre el que se mueve el Sprite
+	 * @param anchoMundo ancho del mundo sobre el que se mueve el Sprite
+	 * @param altoMundo  alto del mundo sobre el que se mueve el Sprite
 	 */
 	public void moverSprite(int derecha, int izquierda, int abajo) {
 
 		if (posX >= izquierda + ancho) {// por la derecha
 
-			if (contador == 5) {
-				posY = 1 + posY;
-				contador = 0;
-			}
-			contador++;
-			velocidadX -= 1;
+			velocidadX = Math.abs(velocidadX);
 
 		}
 		if (posX <= derecha - ancho) {// por la izquierda
-			velocidadX += 1;
+			velocidadX = -1 * Math.abs(velocidadX);
 
 		}
 
@@ -136,6 +116,26 @@ public class Sprite {
 		}
 
 		posX = posX + velocidadX;
+	}
+
+	public void moverSprite(int derecha, int izquierda, int abajo, ArrayList<Sprite> bloqueMarcianitos) {
+
+		if (bloqueMarcianitos.get(0).getPosX() < izquierda) {// por la derecha
+
+			velocidadX = Math.abs(velocidadX);
+		
+		}
+
+		if (bloqueMarcianitos.get(bloqueMarcianitos.size() - 1).getPosX() > derecha) {// por la izquierda
+			velocidadX = -1 * Math.abs(velocidadX);
+			
+		}
+
+		if (posY >= abajo - alto) {
+			posY =abajo;
+		}
+		posX = posX + velocidadX;
+		System.out.println(posX+ "-"+bloqueMarcianitos.get(0).getPosX());
 	}
 
 	public boolean colisiona(Sprite otro) {
@@ -169,8 +169,7 @@ public class Sprite {
 	 * Método que pinta el Sprite en el mundo teniendo en cuenta las
 	 * características propias del Sprite.
 	 * 
-	 * @param g
-	 *            Es el Graphics del mundo que se utilizará para pintar el Sprite.
+	 * @param g Es el Graphics del mundo que se utilizará para pintar el Sprite.
 	 */
 	public void pintarSpriteEnMundo(Graphics g) {
 		g.drawImage(buffer, posX, posY, null);
@@ -238,40 +237,6 @@ public class Sprite {
 		posX = posX + velocidadX;
 		posY = posY + velocidadY;
 
-	}
-
-
-	public void moverSprite(int derecha, int izquierda, int abajo, ArrayList<Sprite> bloqueMarcianitos) {
-
-			if (bloqueMarcianitos.get(0).getPosX() < izquierda+ancho ) {// por la derecha
-
-//				if (contador == 10) {
-//					posY = 10 + posY;
-//					contador = 0;
-//				}
-//				contador++;
-				velocidadX = Math.abs(velocidadX);
-				
-
-			} 
-		
-			
-		
-		if (bloqueMarcianitos.get(bloqueMarcianitos.size()-1).getPosX() >= derecha - ancho) {// por la izquierda
-			velocidadX = -1*Math.abs(velocidadX);
-
-		}
-
-		if (posY >= abajo - alto) {
-			for (int i = 0; i < bloqueMarcianitos.size(); i++) {
-				bloqueMarcianitos.remove(i);
-			}
-		}
-		posX = posX + velocidadX;
-		
-		
-		
-		
 	}
 
 }

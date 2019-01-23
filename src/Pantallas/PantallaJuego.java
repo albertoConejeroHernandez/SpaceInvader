@@ -75,7 +75,7 @@ public class PantallaJuego implements Pantalla {
 		int rd;
 		for (int i = 0; i < 6; i++) {
 
-			posX = (i * 70 + 1) + arriba;
+			posX = (i * 85 + 1) + arriba;
 			for (int j = 0; j < 4; j++) {
 
 				Sprite creador;
@@ -86,7 +86,7 @@ public class PantallaJuego implements Pantalla {
 				}
 
 				posY = (j * 70 + 1) + izquierda;
-				creador = new Sprite(anchoSpriteMarcianito, anchoSpriteMarcianito, posX, posY, 3, 0,
+				creador = new Sprite(anchoSpriteMarcianito, anchoSpriteMarcianito, posX, posY, 2, 0,
 						imagenesMarcianos[rd]);
 
 				bloqueMarcianitos.add(creador);
@@ -142,17 +142,22 @@ public class PantallaJuego implements Pantalla {
 	}
 
 	private void comprobarPosicion() {
+		
+		if (bloqueMarcianitos.size()!=0) {
+			if (bloqueMarcianitos.get(0).getPosX() <= izquierda) {
+				System.out.println("------------------------Choque");
+				System.out.println("----------"+bloqueMarcianitos.get(0).getPosY());
+				for (Sprite sprite : bloqueMarcianitos) {
+					sprite.setPosY(sprite.getPosY() + 10);
+					sprite.setPosX(sprite.getPosX());
+				}
+			} else {
+				for (Sprite sprite : bloqueMarcianitos) {
+					sprite.setPosY(sprite.getPosY());
 
-		if (bloqueMarcianitos.get(0).getPosX() <= izquierda + bloqueMarcianitos.get(0).getAncho()) {
-			for (Sprite sprite : bloqueMarcianitos) {
-				sprite.setPosY(sprite.getPosY() + 10);
-			}
-		} else {
-			for (Sprite sprite : bloqueMarcianitos) {
-				sprite.setPosY(sprite.getPosY());
-				
-			}
+				}
 
+			} 
 		}
 	}
 
@@ -176,7 +181,11 @@ public class PantallaJuego implements Pantalla {
 			if (bloqueMarcianitos.get(i).colisiona(disparo)) {
 				disparo = null;
 				bloqueMarcianitos.remove(i);
-
+				if(bloqueMarcianitos.size()== 0) {
+					PantallaGanador pantallaGanador = new PantallaGanador(panelJuego);
+					pantallaGanador.inicializarPantalla();
+					panelJuego.setPantallaActual(pantallaGanador);
+				}
 			}
 
 		}
@@ -203,7 +212,7 @@ public class PantallaJuego implements Pantalla {
 
 		if (disparo == null) {
 			disparo = new Sprite(nave.getAncho() / 4, nave.getAlto(), nave.getPosX() + nave.getAncho() / 4,
-					nave.getPosY(), 0, -15, "ImagenesSpaceInvaders/Disparos/disparoMarcianito.PNG");
+					nave.getPosY(), 0, -35, "ImagenesSpaceInvaders/Disparos/disparoMarcianito.PNG");
 
 		}
 
