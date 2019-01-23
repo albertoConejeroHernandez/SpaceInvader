@@ -41,7 +41,7 @@ public class PantallaJuego implements Pantalla {
 	// tamañp de la paantalla de juego
 	int anchoPanelJuego;
 	int altoPanelJuego;
-
+	int hola;
 	public PantallaJuego(PanelJuego panelJuego) {
 		super();
 		this.panelJuego = panelJuego;
