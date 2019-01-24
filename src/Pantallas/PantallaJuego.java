@@ -23,16 +23,24 @@ public class PantallaJuego implements Pantalla {
 
 	PanelJuego panelJuego;
 
-	private static final int anchoSpriteMarcianito = 40;
+	private static final int anchoSprite = 40;
 	BufferedImage imagenFondo;
 	BufferedImage trasFondo;
 	Sprite nave;
 	Sprite disparo;
+	Sprite[] proteccion;
 	ArrayList<Sprite> bloqueMarcianitos;
 	Image imagenRescalada;
-	String[] imagenesMarcianos = { "imagenesSpaceInvaders/Marcianos/M1.PNG", "imagenesSpaceInvaders/Marcianos/M2.PNG",
-			"imagenesSpaceInvaders/Marcianos/M4.PNG", "imagenesSpaceInvaders/Marcianos/M5.PNG",
-			"imagenesSpaceInvaders/Marcianos/M6.PNG", "imagenesSpaceInvaders/Marcianos/MBoss.PNG" };
+	Image imagenRescaladaTrasFondo;
+	// m2-m1
+	// m5-m6
+	String[] parejasMarcianosFR = { "imagenesSpaceInvaders/Marcianos/M1.PNG",
+			"imagenesSpaceInvaders/Marcianos/M2.PNG" };
+	String[] parejasMarcianosSR = { "imagenesSpaceInvaders/Marcianos/M4.PNG",
+			"imagenesSpaceInvaders/Marcianos/M3.PNG", };
+	String[] parejasMarcianosTR = { "imagenesSpaceInvaders/Marcianos/M5.PNG",
+			"imagenesSpaceInvaders/Marcianos/M6.PNG" };
+	String bossMarcianos = "imagenesSpaceInvaders/Marcianos/MBoss.PNG";
 	// Limites de la pantalla de juego
 	int izquierda;
 	int derecha;
@@ -41,7 +49,7 @@ public class PantallaJuego implements Pantalla {
 	// tamañp de la paantalla de juego
 	int anchoPanelJuego;
 	int altoPanelJuego;
-	
+
 	public PantallaJuego(PanelJuego panelJuego) {
 		super();
 		this.panelJuego = panelJuego;
@@ -60,48 +68,59 @@ public class PantallaJuego implements Pantalla {
 	@Override
 	public void inicializarPantalla() {
 		bloqueMarcianitos = new ArrayList<>();
-
+		proteccion = new Sprite[4];
 		try {
 			imagenFondo = ImageIO.read(new File("imagenesSpaceInvaders/FondoJuegoBueno.PNG"));
-
+			trasFondo = ImageIO.read(new File("imagenesSpaceInvaders/fondoMapa.jpg"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		nave = new Sprite(40, 40, altoPanelJuego, abajo, "imagenesSpaceInvaders/naves/Nave1.PNG");
+		nave = new Sprite(40, 40, altoPanelJuego, abajo, "ImagenesSpaceInvaders/naves/Nave1.PNG");
 		int posX = 0;
 		int posY = 0;
-
+		String aux = "";
 		int rd;
 		for (int i = 0; i < 6; i++) {
-
-			posX = (i * 85 + 1) + arriba;
+			posX = (i * 85 + 1) + izquierda;
 			for (int j = 0; j < 4; j++) {
+				posY = (j * 70 + 1) + arriba;
+				switch (j) {
+				case 0:
+					aux = bossMarcianos;
+					break;
+				case 1:
+					aux = parejasMarcianosFR[0];
+					break;
+				case 2:
+					aux = parejasMarcianosSR[0];
+					break;
+				case 3:
+					aux = parejasMarcianosTR[0];
+					break;
 
-				Sprite creador;
-				if (j == 0) {
-					rd = 5;
-				} else {
-					rd = j;
+				default:
+					break;
 				}
 
-				posY = (j * 70 + 1) + izquierda;
-				creador = new Sprite(anchoSpriteMarcianito, anchoSpriteMarcianito, posX, posY, 2, 0,
-						imagenesMarcianos[rd]);
+				Sprite creador = new Sprite(anchoSprite, anchoSprite, posX, posY, 7, 0, aux);
 
 				bloqueMarcianitos.add(creador);
 			}
 		}
-
+		for (int i = 0; i < proteccion.length; i++) {
+			proteccion[i] = new Sprite(anchoSprite * 2, anchoSprite * 2, (i * anchoPanelJuego / 4) / 2 + izquierda,
+					abajo + 150, "ImagenesSpaceInvaders/Protecciones/ProteccionCompleta.PNG");
+		}
 		rescalarImagen();
+
+		rescalarImagenFondo();
 
 	}
 
 	@Override
 	public void pintarPantalla(Graphics g) {
-		g.setColor(Color.black);
-		g.fillRect(0, 0, panelJuego.getWidth(), panelJuego.getHeight());
-
+		g.drawImage(imagenRescaladaTrasFondo, izquierda - 45, arriba - 45, null);
 		// Pintamos los marcianitos:
 
 		for (int i = 0; i < bloqueMarcianitos.size(); i++) {
@@ -111,6 +130,10 @@ public class PantallaJuego implements Pantalla {
 		}
 		if (disparo != null) {
 			disparo.pintarSpriteEnMundo(g);
+		}
+		// Pintamos los bloques de proteccion
+		for (int i = 0; i < proteccion.length; i++) {
+			proteccion[i].pintarSpriteEnMundo(g);
 		}
 		// pintamos nave
 		if (nave.getPosX() <= izquierda - nave.getAncho()) {
@@ -123,6 +146,7 @@ public class PantallaJuego implements Pantalla {
 		} else {
 			nave.pintarSpriteEnMundo(g);
 		}
+
 		rellenarFondo(g);
 
 	}
@@ -135,36 +159,34 @@ public class PantallaJuego implements Pantalla {
 	@Override
 	public void ejecutarFrame() {
 		comprobarColision();
-		comprobarPosicion();
+//		System.out.println("Posicion antes de mover el sprite: " + bloqueMarcianitos.get(0).getPosX());
+//		System.out.println("Posicion antes de mover el sprite: " + bloqueMarcianitos.get(1).getPosX());
+		comprobarColisionNave();
 		moverSprites();
-		
+//		System.out.println("Posicion despues de mover el sprite: " + bloqueMarcianitos.get(0).getPosX());
+//		System.out.println("Posicion despues de mover el sprite: " + bloqueMarcianitos.get(1).getPosX());
 
 	}
 
-	private void comprobarPosicion() {
-		
-		if (bloqueMarcianitos.size()!=0) {
-			if (bloqueMarcianitos.get(0).getPosX() <= izquierda) {
-				System.out.println("------------------------Choque");
-				System.out.println("----------"+bloqueMarcianitos.get(0).getPosY());
-				for (Sprite sprite : bloqueMarcianitos) {
-					sprite.setPosY(sprite.getPosY() + 10);
-					sprite.setPosX(sprite.getPosX());
-				}
-			} else {
-				for (Sprite sprite : bloqueMarcianitos) {
-					sprite.setPosY(sprite.getPosY());
-
-				}
+	private void comprobarColisionNave() {
+		for (int i = 0; i < bloqueMarcianitos.size() ; i++) {
+			if (bloqueMarcianitos.get(i).colisiona(nave)) {
+				nave= null;
+				PantallaPerder pantallaMuerte = new PantallaPerder(panelJuego);
+				pantallaMuerte.inicializarPantalla();
+				panelJuego.setPantallaActual(pantallaMuerte);
 
 			} 
 		}
+		
 	}
 
 	private void moverSprites() {
 
 		for (int i = 0; i < bloqueMarcianitos.size(); i++) {
+
 			bloqueMarcianitos.get(i).moverSprite(derecha, izquierda, abajo, bloqueMarcianitos);
+
 		}
 		if (disparo != null) {
 			disparo.moverSprite();
@@ -175,14 +197,22 @@ public class PantallaJuego implements Pantalla {
 	}
 
 	private void comprobarColision() {
-		// Compruebo las colisiones del disparo y el asteroid
+		// Compruebo las colisiones del disparo y la nave con los marcianos
 		for (int i = 0; i < bloqueMarcianitos.size() && disparo != null; i++) {
 
 			if (bloqueMarcianitos.get(i).colisiona(disparo)) {
 				disparo = null;
+				bloqueMarcianitos.get(i)
+						.actualizarImagen("ImagenesSpaceInvaders/MuerteExplosiones/explosionMarciano.PNG");
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				bloqueMarcianitos.remove(i);
-				if(bloqueMarcianitos.size()== 0) {
-					PantallaGanador pantallaGanador = new PantallaGanador(panelJuego);
+				if (bloqueMarcianitos.size() == 0) {
+					PantallaPerder pantallaGanador = new PantallaPerder(panelJuego);
 					pantallaGanador.inicializarPantalla();
 					panelJuego.setPantallaActual(pantallaGanador);
 				}
@@ -197,12 +227,12 @@ public class PantallaJuego implements Pantalla {
 		if (nave.getPosX() <= izquierda - nave.getAncho()) {
 			nave.setPosX(izquierda);
 		} else {
-			nave.setPosX(e.getX() - (anchoSpriteMarcianito / 2));
+			nave.setPosX(e.getX() - (anchoSprite / 2));
 		}
 		if (nave.getPosX() >= derecha - nave.getAncho()) {
 			nave.setPosX(derecha);
 		} else {
-			nave.setPosX(e.getX() - (anchoSpriteMarcianito / 2));
+			nave.setPosX(e.getX() - (anchoSprite / 2));
 		}
 
 	}
@@ -212,7 +242,7 @@ public class PantallaJuego implements Pantalla {
 
 		if (disparo == null) {
 			disparo = new Sprite(nave.getAncho() / 4, nave.getAlto(), nave.getPosX() + nave.getAncho() / 4,
-					nave.getPosY(), 0, -35, "ImagenesSpaceInvaders/Disparos/disparoMarcianito.PNG");
+					nave.getPosY(), 0, -35, "ImagenesSpaceInvaders/Disparos/disparoNaveRecto.PNG");
 
 		}
 
@@ -220,10 +250,15 @@ public class PantallaJuego implements Pantalla {
 
 	@Override
 	public void redimensionarPantalla(ComponentEvent e) {
-		rescalarImagen();
+		rescalarImagenFondo();
 	}
 
 	private void rescalarImagen() {
+		imagenRescaladaTrasFondo = trasFondo.getScaledInstance(anchoPanelJuego + 100, altoPanelJuego + 100,
+				Image.SCALE_SMOOTH);
+	}
+
+	private void rescalarImagenFondo() {
 		imagenRescalada = imagenFondo.getScaledInstance(panelJuego.getWidth(), panelJuego.getHeight(),
 				Image.SCALE_SMOOTH);
 	}

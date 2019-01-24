@@ -3,6 +3,7 @@ package Base;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 
@@ -17,7 +18,7 @@ import java.awt.Image;
 public class Sprite {
 
 	private BufferedImage buffer;
-	private Color color = Color.BLUE;
+	private Color color = Color.RED;
 	// Variables de dimensión
 	private int ancho;
 	private int alto;
@@ -92,6 +93,10 @@ public class Sprite {
 		}
 
 	}
+	public void actualizarImagen(String Imagen) {
+		this.rutaImagen = Imagen;
+		actualizarBuffer();
+	}
 
 	/**
 	 * Método para mover el Sprite por el mundo.
@@ -99,43 +104,54 @@ public class Sprite {
 	 * @param anchoMundo ancho del mundo sobre el que se mueve el Sprite
 	 * @param altoMundo  alto del mundo sobre el que se mueve el Sprite
 	 */
-	public void moverSprite(int derecha, int izquierda, int abajo) {
+//	public void moverSprite(int derecha, int izquierda, int abajo) {
+//
+//		if (posX >= izquierda + ancho) {// por la derecha
+//
+//			velocidadX = Math.abs(velocidadX);
+//
+//		}
+//		if (posX <= derecha - ancho) {// por la izquierda
+//			velocidadX = -1 * Math.abs(velocidadX);
+//
+//		}
+//
+//		if (posY >= abajo - alto) {
+//			posY = abajo;
+//		}
+//
+//		posX = posX + velocidadX;
+//	}
 
-		if (posX >= izquierda + ancho) {// por la derecha
+	public void moverSprite(int derecha, int izquierda, int abajo, ArrayList<Sprite> bloqueMarcianitos) {
 
+		if (bloqueMarcianitos.get(0).getPosX() < izquierda) {// por la derecha
 			velocidadX = Math.abs(velocidadX);
-
+			
+			
+			
+			System.out.println("Choque!!!-------");
 		}
-		if (posX <= derecha - ancho) {// por la izquierda
+
+		if (bloqueMarcianitos.get(bloqueMarcianitos.size() - 1).getPosX() > derecha) {// por la izquierda
 			velocidadX = -1 * Math.abs(velocidadX);
+
+			for (Sprite sprite : bloqueMarcianitos) {
+				sprite.setPosY(sprite.getPosY() + 1);
+				
+			}
 
 		}
 
 		if (posY >= abajo - alto) {
 			posY = abajo;
 		}
-
-		posX = posX + velocidadX;
-	}
-
-	public void moverSprite(int derecha, int izquierda, int abajo, ArrayList<Sprite> bloqueMarcianitos) {
-
-		if (bloqueMarcianitos.get(0).getPosX() < izquierda) {// por la derecha
-
-			velocidadX = Math.abs(velocidadX);
-		
-		}
-
-		if (bloqueMarcianitos.get(bloqueMarcianitos.size() - 1).getPosX() > derecha) {// por la izquierda
-			velocidadX = -1 * Math.abs(velocidadX);
+	
+			posX = posX + velocidadX;
 			
-		}
+		
+		
 
-		if (posY >= abajo - alto) {
-			posY =abajo;
-		}
-		posX = posX + velocidadX;
-		System.out.println(posX+ "-"+bloqueMarcianitos.get(0).getPosX());
 	}
 
 	public boolean colisiona(Sprite otro) {

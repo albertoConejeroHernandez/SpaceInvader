@@ -50,8 +50,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class VentanaPrincipal {
 
-	final static int anchoLienzo = 800;
-	final static int altoLienzo = 600;
+//	final static int anchoLienzo = 800;
+//	final static int altoLienzo = 600;
 	
 	//Sigo teniendo la ventana
 	JFrame ventana;
@@ -59,7 +59,7 @@ public class VentanaPrincipal {
 	
 	
 	public VentanaPrincipal() {
-		ventana = new JFrame();
+		ventana = new JFrame("Space Invader");
 		ventana.setBounds(0, 0, 1024, 970);
 		ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -78,9 +78,9 @@ public class VentanaPrincipal {
 		panelJuego = new PanelJuego();
 		ventana.add(panelJuego);
 		
-		BufferedImage cursorImg = new BufferedImage(16,16,BufferedImage.TYPE_INT_ARGB);
-		Cursor cursorTrans = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0,0), "blank cursor");
-		ventana.getContentPane().setCursor(cursorTrans);
+//		BufferedImage cursorImg = new BufferedImage(16,16,BufferedImage.TYPE_INT_ARGB);
+//		Cursor cursorTrans = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0,0), "blank cursor");
+//		ventana.getContentPane().setCursor(cursorTrans);
 	}
 	
 	/**

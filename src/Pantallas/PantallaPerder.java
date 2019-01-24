@@ -17,7 +17,7 @@ import Base.Pantalla;
 import Base.Sprite;
 import Pantallas.PantallaJuego;
 
-public class PantallaGanador implements Pantalla {
+public class PantallaPerder implements Pantalla {
 	PanelJuego panelJuego;
 	
 	// Variables para trabajar la imagen
@@ -35,7 +35,7 @@ public class PantallaGanador implements Pantalla {
 	Sprite botonSalir;
 	
 	
-	public PantallaGanador(PanelJuego panelJuego) {
+	public PantallaPerder(PanelJuego panelJuego) {
 		super();
 		this.panelJuego = panelJuego;
 	}
@@ -50,7 +50,7 @@ public class PantallaGanador implements Pantalla {
 		}
 		botonJugarDeNuevo = new Sprite(400, 50, panelJuego.getWidth() / 2 - 450, panelJuego.getHeight() / 2 + 370, null);
 		botonSalir = new Sprite(200, 50, panelJuego.getWidth() / 2 +200, panelJuego.getHeight() / 2 + 370, null);
-		fuenteIncial = new Font("Arial", Font.BOLD, 20);
+		fuenteIncial = new Font("Arial", Font.BOLD, 25);
 		colorLetra = Color.YELLOW;
 		reescalarImagen();
 	}
@@ -62,6 +62,7 @@ public class PantallaGanador implements Pantalla {
 		g.setColor(colorLetra);
 		botonJugarDeNuevo.pintarSpriteEnMundo(g);
 		botonSalir.pintarSpriteEnMundo(g);
+		g.drawString("HAS PERDIDO", panelJuego.getWidth() / 2 , panelJuego.getHeight() /2 );
 		g.drawString("Cerrar", panelJuego.getWidth() / 2 + 250, panelJuego.getHeight() / 2+400);
 		g.drawString("Pulsa para Jugar de nuevo", panelJuego.getWidth() / 2 - 400, panelJuego.getHeight() / 2 + 400);
 
