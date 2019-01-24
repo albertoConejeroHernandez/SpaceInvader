@@ -24,15 +24,23 @@ public class PantallaJuego implements Pantalla {
 	PanelJuego panelJuego;
 
 	private static final int anchoSprite = 40;
-	BufferedImage imagenFondo;
-	BufferedImage trasFondo;
+	static final int aceleracion = 3;
+
+	// Sprites y funcionalidad;
 	Sprite nave;
 	Sprite disparo;
+	Sprite disparoMarciano;
+	Sprite liderMarciano;
 	ArrayList<Sprite> proteccion;
 	ArrayList<Sprite> bloqueMarcianitos;
+	int contadorDisparoMarcianos = 0;
+
+	// Imagenes fondo y trasFondo
 	Image imagenRescalada;
 	Image imagenRescaladaTrasFondo;
-	int contador = 0;
+	BufferedImage imagenFondo;
+	BufferedImage trasFondo;
+
 	// ImagenesSprite
 	String[] proteccionesImagenes = { "imagenesSpaceInvaders/Protecciones/ProteccionCompleta.PNG",
 			"imagenesSpaceInvaders/Protecciones/ProteccionPocoDañada.PNG",
@@ -45,11 +53,13 @@ public class PantallaJuego implements Pantalla {
 	String[] parejasMarcianosTR = { "imagenesSpaceInvaders/Marcianos/M5.PNG",
 			"imagenesSpaceInvaders/Marcianos/M6.PNG" };
 	String bossMarcianos = "imagenesSpaceInvaders/Marcianos/MBoss.PNG";
+
 	// Limites de la pantalla de juego
 	int izquierda;
 	int derecha;
 	int arriba;
 	int abajo;
+
 	// tamañp de la paantalla de juego
 	int anchoPanelJuego;
 	int altoPanelJuego;
@@ -79,16 +89,30 @@ public class PantallaJuego implements Pantalla {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 		nave = new Sprite(40, 40, altoPanelJuego, abajo, "ImagenesSpaceInvaders/naves/Nave1.PNG");
-		int posX = 0;
-		int posY = 0;
-		String aux = "";
+		liderMarciano = new Sprite(anchoSprite, anchoSprite, 85 + izquierda, 70 + arriba, 0, 0);
+		generarMarcianitos();
+		generarProtecciones();
+		rescalarImagen();
 
+		rescalarImagenFondo();
+
+	}
+
+	private void generarProtecciones() {
+		for (int i = 0; i < 4; i++) {
+			Sprite protecciones = new Sprite(anchoSprite * 2, anchoSprite, ((anchoPanelJuego / 4) * i + 250), 650,
+					proteccionesImagenes[0], 0);
+			proteccion.add(protecciones);
+
+		}
+
+	}
+
+	public void generarMarcianitos() {
+		String aux = "";
 		for (int i = 0; i < 6; i++) {
-			posX = (i * 85 + 1) + izquierda;
 			for (int j = 0; j < 4; j++) {
-				posY = (j * 70 + 1) + arriba;
 				switch (j) {
 				case 0:
 					aux = bossMarcianos;
@@ -102,40 +126,29 @@ public class PantallaJuego implements Pantalla {
 				case 3:
 					aux = parejasMarcianosTR[0];
 					break;
-
-				default:
-					break;
 				}
-
-				Sprite creador = new Sprite(anchoSprite, anchoSprite, posX, posY, 4, 0, aux);
+				Sprite creador = new Sprite(anchoSprite, anchoSprite, (80*i)+1+izquierda,
+						liderMarciano.getPosY()*j , aux);
 
 				bloqueMarcianitos.add(creador);
 			}
 		}
-		for (int i = 0; i < 4; i++) {
-			Sprite protecciones = new Sprite(anchoSprite * 2, anchoSprite, ((anchoPanelJuego / 4) * i + 250), 650,
-					proteccionesImagenes[0], 0);
-			proteccion.add(protecciones);
-
-		}
-		rescalarImagen();
-
-		rescalarImagenFondo();
-
 	}
 
 	@Override
 	public void pintarPantalla(Graphics g) {
 		g.drawImage(imagenRescaladaTrasFondo, izquierda - 45, arriba - 45, null);
 		// Pintamos los marcianitos:
-
+		liderMarciano.pintarSpriteEnMundo(g);
 		for (int i = 0; i < bloqueMarcianitos.size(); i++) {
-
 			bloqueMarcianitos.get(i).pintarSpriteEnMundo(g);
 
 		}
 		if (disparo != null) {
 			disparo.pintarSpriteEnMundo(g);
+		}
+		if (disparoMarciano != null) {
+			disparoMarciano.pintarSpriteEnMundo(g);
 		}
 		// Pintamos los bloques de proteccion
 		for (int i = 0; i < proteccion.size(); i++) {
@@ -164,11 +177,26 @@ public class PantallaJuego implements Pantalla {
 
 	@Override
 	public void ejecutarFrame() {
-		comprobarColision();
 
+		comprobarColision();
 		comprobarColisionNave();
 		moverSprites();
+		disparoMarcianito();
+	}
 
+	private void disparoMarcianito() {
+		if (bloqueMarcianitos.size() > 0) {
+			int rd = new Random().nextInt(bloqueMarcianitos.size());
+			if (contadorDisparoMarcianos == 50 && disparoMarciano == null) {
+				disparoMarciano = new Sprite(bloqueMarcianitos.get(rd).getAncho() / 4,
+						bloqueMarcianitos.get(rd).getAlto(),
+						bloqueMarcianitos.get(rd).getPosX() + bloqueMarcianitos.get(rd).getAncho() / 4,
+						bloqueMarcianitos.get(rd).getPosY(), 0, +15,
+						"ImagenesSpaceInvaders/Disparos/disparoMarcianitos.PNG");
+				contadorDisparoMarcianos = 0;
+			}
+			contadorDisparoMarcianos++;
+		}
 	}
 
 	private void comprobarColisionNave() {
@@ -186,21 +214,28 @@ public class PantallaJuego implements Pantalla {
 
 	private void moverSprites() {
 
-		for (int i = 0; i < bloqueMarcianitos.size(); i++) {
-			bloqueMarcianitos.get(i).moverSprite(derecha, izquierda, abajo, bloqueMarcianitos);
-		}
+		liderMarciano.moverSprite(derecha, izquierda);
+//		for (Sprite sprite : bloqueMarcianitos) {
+//			sprite.setPosX(liderMarciano.getPosX());
+//		}
+
 		if (disparo != null) {
 			disparo.moverSprite();
 			if (disparo.getPosY() + disparo.getAlto() <= arriba) {
 				disparo = null;
 			}
 		}
+		if (disparoMarciano != null) {
+			disparoMarciano.moverSprite();
+			if (disparoMarciano.getPosY() + disparoMarciano.getAlto() > abajo) {
+				disparoMarciano = null;
+			}
+		}
 	}
 
 	private void comprobarColision() {
-		// Compruebo las colisiones del disparo y la nave con los marcianos
-		for (int i = 0; i < bloqueMarcianitos.size() && disparo != null; i++) {
 
+		for (int i = 0; i < bloqueMarcianitos.size() && disparo != null; i++) {
 			if (bloqueMarcianitos.get(i).colisiona(disparo)) {
 				disparo = null;
 				bloqueMarcianitos.remove(i);
@@ -212,51 +247,39 @@ public class PantallaJuego implements Pantalla {
 			}
 
 		}
+
+		for (int i = 0; i < bloqueMarcianitos.size(); i++) {
+			for (int j = 0; j < proteccion.size(); j++) {
+				if (bloqueMarcianitos.get(i).colisiona(proteccion.get(j))) {
+					proteccion.remove(j);
+				}
+			}
+		}
 		for (int i = 0; i < proteccion.size() && disparo != null; i++) {
 
 			if (proteccion.get(i).colisiona(disparo)) {
 				disparo = null;
-
+				proteccion.get(i).setContadorDisparo(proteccion.get(i).getContadorDisparo() + 1);
 				switch (proteccion.get(i).getContadorDisparo()) {
-				case 0:
-					try {
-						proteccion.get(i).actualizarBuffer();
-						proteccion.get(i).setBuffer(ImageIO.read(new File(proteccionesImagenes[1])));
-
-					} catch (IOException e) {
-
-					}
-					proteccion.get(i).setContadorDisparo(1);
-					break;
-				case 1:
-					try {
-						proteccion.get(i).actualizarBuffer();
-						proteccion.get(i).setBuffer(ImageIO.read(new File(proteccionesImagenes[2])));
-
-					} catch (IOException e) {
-
-					}
-					proteccion.get(i).setContadorDisparo(2);
-					break;
-				case 2:
-					try {
-						proteccion.get(i).actualizarBuffer();
-						proteccion.get(i).setBuffer(ImageIO.read(new File(proteccionesImagenes[3])));
-
-					} catch (IOException e) {
-
-					}
-					proteccion.get(i).setContadorDisparo(3);
-					break;
 				case 3:
+					proteccion.get(i).setContadorDisparo(0);
 					proteccion.remove(i);
 					break;
-				default:
+				}
+			}
+		}
+		for (int i = 0; i < proteccion.size() && disparoMarciano != null; i++) {
+
+			if (proteccion.get(i).colisiona(disparoMarciano)) {
+				disparoMarciano = null;
+				proteccion.get(i).setContadorDisparo(proteccion.get(i).getContadorDisparo() + 1);
+				switch (proteccion.get(i).getContadorDisparo()) {
+				case 3:
+					proteccion.get(i).setContadorDisparo(0);
+					proteccion.remove(i);
 					break;
 				}
-
 			}
-
 		}
 
 	}

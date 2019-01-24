@@ -28,6 +28,9 @@ public class Sprite {
 	// Variables para la velocidad
 	private int velocidadX;
 	private int velocidadY;
+	//variables de extra velocidad
+	 int extraVelX;
+	 int extraVelY;
 	// ruta imagen SpriteAsteriod
 	private String rutaImagen;
 	private BufferedImage imagenSprite;
@@ -77,20 +80,29 @@ public class Sprite {
 	 * @param posY
 	 *            posición vertical del Sprite en el mundo. El origen se sitúa en
 	 *            la parte superior.
-	 * @param velocidadX
+	 * @param extraVelX
 	 *            velocidad horizontal del Sprite.
-	 * @param velocidadY
+	 * @param extraVelY
 	 *            velocidad vertical del Sprite.
 	 */
-	public Sprite(int ancho, int alto, int posX, int posY, int velocidadX, int velocidadY, String rutaImagen) {
+	public Sprite(int ancho, int alto, int posX, int posY, int extraVelX, int extraVelY, String rutaImagen) {
+		this.ancho = ancho;
+		this.alto = alto;
+		this.posX = posX;
+		this.posY = posY;
+//		this.extraVelX = extraVelX;
+//		this.extraVelY = extraVelY;
+		this.rutaImagen = rutaImagen;
+		actualizarBuffer();
+		
+	}
+	public Sprite(int ancho, int alto, int posX, int posY, int velocidadX, int velocidadY) {
 		this.ancho = ancho;
 		this.alto = alto;
 		this.posX = posX;
 		this.posY = posY;
 		this.velocidadX = velocidadX;
 		this.velocidadY = velocidadY;
-		this.rutaImagen = rutaImagen;
-		actualizarBuffer();
 	}
 
 	public Sprite(int ancho, int alto, int posX, int posY, String rutaImagen, int contadorDisparos) {
@@ -122,28 +134,19 @@ public class Sprite {
 
 	}
 
-	public void moverSprite(int derecha, int izquierda, int abajo, ArrayList<Sprite> bloqueMarcianitos) {
+	public void moverSprite(int derecha, int izquierda) {
 
-		if (bloqueMarcianitos.get(0).getPosX() < izquierda) {// por la derecha
+		if (getPosX() < izquierda) {// por la derecha
 
-			
 			velocidadX = Math.abs(velocidadX);
 
 			System.out.println("Choque!!!-------");
 		}
 
-		if (bloqueMarcianitos.get(bloqueMarcianitos.size() - 1).getPosX() > derecha) {// por la izquierda
+		if (getPosX() > derecha) {// por la izquierda
 			velocidadX = -1 * Math.abs(velocidadX);
+			setPosY(getPosY()+1);
 
-			for (Sprite sprite : bloqueMarcianitos) {
-				sprite.setPosY(sprite.getPosY() + 1);
-
-			}
-
-		}
-
-		if (posY >= abajo - alto) {
-			posY = abajo;
 		}
 
 		posX = posX + velocidadX;
@@ -254,6 +257,22 @@ public class Sprite {
 
 	public void setAceleracionY(int velocidadY) {
 		this.velocidadY = velocidadY;
+	}
+
+	public int getExtraVelX() {
+		return extraVelX;
+	}
+
+	public void setExtraVelX(int extraVelX) {
+		this.extraVelX = extraVelX;
+	}
+
+	public int getExtraVelY() {
+		return extraVelY;
+	}
+
+	public void setExtraVelY(int extraVelY) {
+		this.extraVelY = extraVelY;
 	}
 
 	public void moverSprite() {
