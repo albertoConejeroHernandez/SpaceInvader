@@ -43,7 +43,7 @@ public class PantallaPerder implements Pantalla {
 	@Override
 	public void inicializarPantalla() {
 		try {
-			imagenFondo = ImageIO.read(new File("imagenes/galaxia.jpg"));
+			imagenFondo = ImageIO.read(new File("imagenesSpaceInvaders/GameOver.jpg"));
 
 		} catch (IOException e) {
 			e.printStackTrace();

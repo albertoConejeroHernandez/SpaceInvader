@@ -19,11 +19,11 @@ import Pantallas.PantallaJuego;
 
 public class PantallaGanador implements Pantalla {
 	PanelJuego panelJuego;
-	
+
 	// Variables para trabajar la imagen
 	BufferedImage imagenFondo;
 	Image imagenRescalada;
-	
+
 	// Variables para trabajar el color de letras con parpadeos
 	Color colorLetra;
 	Font fuenteIncial;
@@ -33,8 +33,7 @@ public class PantallaGanador implements Pantalla {
 	// Variables para usar "Botones" de jugar de nuevo o cerrar
 	Sprite botonJugarDeNuevo;
 	Sprite botonSalir;
-	
-	
+
 	public PantallaGanador(PanelJuego panelJuego) {
 		super();
 		this.panelJuego = panelJuego;
@@ -48,8 +47,9 @@ public class PantallaGanador implements Pantalla {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		botonJugarDeNuevo = new Sprite(400, 50, panelJuego.getWidth() / 2 - 450, panelJuego.getHeight() / 2 + 370, null);
-		botonSalir = new Sprite(200, 50, panelJuego.getWidth() / 2 +200, panelJuego.getHeight() / 2 + 370, null);
+		botonJugarDeNuevo = new Sprite(400, 50, panelJuego.getWidth() / 2 - 450, panelJuego.getHeight() / 2 + 370,
+				null);
+		botonSalir = new Sprite(200, 50, panelJuego.getWidth() / 2 + 200, panelJuego.getHeight() / 2 + 370, null);
 		fuenteIncial = new Font("Arial", Font.BOLD, 20);
 		colorLetra = Color.YELLOW;
 		reescalarImagen();
@@ -62,7 +62,7 @@ public class PantallaGanador implements Pantalla {
 		g.setColor(colorLetra);
 		botonJugarDeNuevo.pintarSpriteEnMundo(g);
 		botonSalir.pintarSpriteEnMundo(g);
-		g.drawString("Cerrar", panelJuego.getWidth() / 2 + 250, panelJuego.getHeight() / 2+400);
+		g.drawString("Cerrar", panelJuego.getWidth() / 2 + 250, panelJuego.getHeight() / 2 + 400);
 		g.drawString("Pulsa para Jugar de nuevo", panelJuego.getWidth() / 2 - 400, panelJuego.getHeight() / 2 + 400);
 
 	}
@@ -91,12 +91,15 @@ public class PantallaGanador implements Pantalla {
 
 	@Override
 	public void pulsarRaton(MouseEvent e) {
-		if (e.getX()== botonJugarDeNuevo.getPosX() && e.getY() ==  botonJugarDeNuevo.getPosY()) {
+		if (e.getX() == botonJugarDeNuevo.getPosX() && e.getY() == botonJugarDeNuevo.getPosY()) {
 			PantallaJuego pantallaJuego = new PantallaJuego(panelJuego);
 			pantallaJuego.inicializarPantalla();
 			panelJuego.setPantallaActual(pantallaJuego);
-		} else if (e.getX() == botonSalir.getPosX()&& e.getY() ==  botonSalir.getPosY()) {
-			System.exit(0);
+		} else {
+			if (e.getX() == botonSalir.getPosX() && e.getY() == botonSalir.getPosY()) {
+				System.exit(1);
+			}
+
 		}
 
 	}
@@ -106,6 +109,7 @@ public class PantallaGanador implements Pantalla {
 		reescalarImagen();
 
 	}
+
 	private void reescalarImagen() {
 		imagenRescalada = imagenFondo.getScaledInstance(panelJuego.getWidth(), panelJuego.getHeight(),
 				Image.SCALE_SMOOTH);
