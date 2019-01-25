@@ -276,13 +276,16 @@ public class PantallaJuego implements Pantalla {
 	}
 
 	public int getMarcianoIzq() {
-		int posIzquierda = bloqueMarcianitos.get(0).getPosX();
-		for (Sprite sprite : bloqueMarcianitos) {
-			if (sprite.getPosX() < posIzquierda) {
-				posIzquierda = sprite.getPosX();
+		int posIzquierda=0;
+		if (bloqueMarcianitos.size()!=0) {
+			posIzquierda = bloqueMarcianitos.get(0).getPosX();
+			for (Sprite sprite : bloqueMarcianitos) {
+				if (sprite.getPosX() < posIzquierda) {
+					posIzquierda = sprite.getPosX();
+				}
 			}
-		}
-		return posIzquierda;
+			
+		}return posIzquierda;
 	}
 
 	public int getMarcianoDer() {
