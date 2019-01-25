@@ -30,26 +30,23 @@ public class PantallaGanador implements Pantalla {
 	int contadorColorFrames = 0;
 	static final int cambioColorInicio = 10;
 
-	// Variables para usar "Botones" de jugar de nuevo o cerrar
-	Sprite botonJugarDeNuevo;
-	Sprite botonSalir;
 
-	public PantallaGanador(PanelJuego panelJuego) {
+	//Variable para mostrar la puntuacion
+	int puntuacion;
+	public PantallaGanador(PanelJuego panelJuego, int puntuacion) {
 		super();
 		this.panelJuego = panelJuego;
+		this.puntuacion = puntuacion;
 	}
 
 	@Override
 	public void inicializarPantalla() {
 		try {
-			imagenFondo = ImageIO.read(new File("imagenes/galaxia.jpg"));
+			imagenFondo = ImageIO.read(new File("imagenesSpaceInvaders/win.jpg"));
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		botonJugarDeNuevo = new Sprite(400, 50, panelJuego.getWidth() / 2 - 450, panelJuego.getHeight() / 2 + 370,
-				null);
-		botonSalir = new Sprite(200, 50, panelJuego.getWidth() / 2 + 200, panelJuego.getHeight() / 2 + 370, null);
 		fuenteIncial = new Font("Arial", Font.BOLD, 20);
 		colorLetra = Color.YELLOW;
 		reescalarImagen();
@@ -60,10 +57,9 @@ public class PantallaGanador implements Pantalla {
 		g.drawImage(imagenRescalada, 0, 0, null);
 		g.setFont(fuenteIncial);
 		g.setColor(colorLetra);
-		botonJugarDeNuevo.pintarSpriteEnMundo(g);
-		botonSalir.pintarSpriteEnMundo(g);
-		g.drawString("Cerrar", panelJuego.getWidth() / 2 + 250, panelJuego.getHeight() / 2 + 400);
-		g.drawString("Pulsa para Jugar de nuevo", panelJuego.getWidth() / 2 - 400, panelJuego.getHeight() / 2 + 400);
+	
+		g.drawString("Puntuacion: "+puntuacion, panelJuego.getWidth() / 2 + 250, panelJuego.getHeight() / 2 + 400);
+		g.drawString("Cerrar", panelJuego.getWidth() / 2 - 400, panelJuego.getHeight() / 2 + 400);
 
 	}
 
@@ -91,16 +87,9 @@ public class PantallaGanador implements Pantalla {
 
 	@Override
 	public void pulsarRaton(MouseEvent e) {
-		if (e.getX() == botonJugarDeNuevo.getPosX() && e.getY() == botonJugarDeNuevo.getPosY()) {
-			PantallaJuego pantallaJuego = new PantallaJuego(panelJuego);
-			pantallaJuego.inicializarPantalla();
-			panelJuego.setPantallaActual(pantallaJuego);
-		} else {
-			if (e.getX() == botonSalir.getPosX() && e.getY() == botonSalir.getPosY()) {
-				System.exit(1);
-			}
+		System.exit(0);
 
-		}
+		
 
 	}
 

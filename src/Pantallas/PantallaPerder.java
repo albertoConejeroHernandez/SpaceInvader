@@ -19,25 +19,23 @@ import Pantallas.PantallaJuego;
 
 public class PantallaPerder implements Pantalla {
 	PanelJuego panelJuego;
-	
+
 	// Variables para trabajar la imagen
 	BufferedImage imagenFondo;
 	Image imagenRescalada;
-	
+
 	// Variables para trabajar el color de letras con parpadeos
 	Color colorLetra;
 	Font fuenteIncial;
 	int contadorColorFrames = 0;
 	static final int cambioColorInicio = 10;
+	// Variable para la puntuacion
+	int puntos;
 
-	// Variables para usar "Botones" de jugar de nuevo o cerrar
-	Sprite botonJugarDeNuevo;
-	Sprite botonSalir;
-	
-	
-	public PantallaPerder(PanelJuego panelJuego) {
+	public PantallaPerder(PanelJuego panelJuego, int puntuacion) {
 		super();
 		this.panelJuego = panelJuego;
+		this.puntos = puntuacion;
 	}
 
 	@Override
@@ -48,8 +46,6 @@ public class PantallaPerder implements Pantalla {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		botonJugarDeNuevo = new Sprite(400, 50, panelJuego.getWidth() / 2 - 450, panelJuego.getHeight() / 2 + 370, null);
-		botonSalir = new Sprite(200, 50, panelJuego.getWidth() / 2 +200, panelJuego.getHeight() / 2 + 370, null);
 		fuenteIncial = new Font("Arial", Font.BOLD, 25);
 		colorLetra = Color.YELLOW;
 		reescalarImagen();
@@ -60,11 +56,9 @@ public class PantallaPerder implements Pantalla {
 		g.drawImage(imagenRescalada, 0, 0, null);
 		g.setFont(fuenteIncial);
 		g.setColor(colorLetra);
-		botonJugarDeNuevo.pintarSpriteEnMundo(g);
-		botonSalir.pintarSpriteEnMundo(g);
-		g.drawString("HAS PERDIDO", panelJuego.getWidth() / 2 , panelJuego.getHeight() /2 );
-		g.drawString("Cerrar", panelJuego.getWidth() / 2 + 250, panelJuego.getHeight() / 2+400);
-		g.drawString("Pulsa para Jugar de nuevo", panelJuego.getWidth() / 2 - 400, panelJuego.getHeight() / 2 + 400);
+		g.drawString("Puntuacion final: " + puntos,  panelJuego.getWidth() / 2 + 250, panelJuego.getHeight() / 2 + 400);
+		g.setColor(colorLetra);
+		g.drawString("Cerrar", panelJuego.getWidth() / 2 - 400, panelJuego.getHeight() / 2 + 400);
 
 	}
 
@@ -92,13 +86,7 @@ public class PantallaPerder implements Pantalla {
 
 	@Override
 	public void pulsarRaton(MouseEvent e) {
-		if (e.getX()== botonJugarDeNuevo.getPosX() && e.getY() ==  botonJugarDeNuevo.getPosY()) {
-			PantallaJuego pantallaJuego = new PantallaJuego(panelJuego);
-			pantallaJuego.inicializarPantalla();
-			panelJuego.setPantallaActual(pantallaJuego);
-		} else if (e.getX() == botonSalir.getPosX()&& e.getY() ==  botonSalir.getPosY()) {
-			System.exit(0);
-		}
+		System.exit(0);
 
 	}
 
@@ -107,6 +95,7 @@ public class PantallaPerder implements Pantalla {
 		reescalarImagen();
 
 	}
+
 	private void reescalarImagen() {
 		imagenRescalada = imagenFondo.getScaledInstance(panelJuego.getWidth(), panelJuego.getHeight(),
 				Image.SCALE_SMOOTH);

@@ -274,7 +274,7 @@ public class PantallaJuego implements Pantalla {
 			if (bloqueMarcianitos.get(i).colisiona(nave)) {
 				bloqueMarcianitos.remove(i);
 
-				PantallaPerder pantallaMuerte = new PantallaPerder(panelJuego);
+				PantallaPerder pantallaMuerte = new PantallaPerder(panelJuego, puntuacion);
 				pantallaMuerte.inicializarPantalla();
 				panelJuego.setPantallaActual(pantallaMuerte);
 			}
@@ -287,7 +287,7 @@ public class PantallaJuego implements Pantalla {
 				vidasNave.remove(contadorVidas - 1);
 				contadorVidas--;
 				if (nave.getVida() == 0) {
-					PantallaPerder pantallaMuerte = new PantallaPerder(panelJuego);
+					PantallaPerder pantallaMuerte = new PantallaPerder(panelJuego, puntuacion);
 					pantallaMuerte.inicializarPantalla();
 					panelJuego.setPantallaActual(pantallaMuerte);
 				}
@@ -356,7 +356,7 @@ public class PantallaJuego implements Pantalla {
 
 				}
 				if (bloqueMarcianitos.size() == 0) {
-					PantallaGanador pantallaGanador = new PantallaGanador(panelJuego);
+					PantallaGanador pantallaGanador = new PantallaGanador(panelJuego, puntuacion);
 					pantallaGanador.inicializarPantalla();
 					panelJuego.setPantallaActual(pantallaGanador);
 				}

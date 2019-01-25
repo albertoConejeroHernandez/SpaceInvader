@@ -42,7 +42,7 @@ public class PantallaInicial implements Pantalla{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		fuenteIncial = new Font("Arial", Font.BOLD, 20);
+		fuenteIncial = new Font("Arial", Font.BOLD, 40);
 		colorLetra = Color.YELLOW;
 	}
 
@@ -54,8 +54,7 @@ public class PantallaInicial implements Pantalla{
 		g.drawImage(imagenRescalada, 0, 0, null);
 		g.setFont(fuenteIncial);
 		g.setColor(colorLetra);
-		g.drawString("Vamos a jugar", panelJuego.getWidth() / 2 - 95, panelJuego.getHeight() / 2);
-		g.drawString("Pulsa para Jugar", panelJuego.getWidth() / 2 - 100, panelJuego.getHeight() / 2 + 40);
+		g.drawString("Pulsa para Jugar", panelJuego.getWidth() / 2 - 300, panelJuego.getHeight() / 2 + 250);
 
 	}
 
