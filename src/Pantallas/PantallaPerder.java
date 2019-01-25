@@ -86,7 +86,9 @@ public class PantallaPerder implements Pantalla {
 
 	@Override
 	public void pulsarRaton(MouseEvent e) {
-		System.exit(0);
+		PantallaJuego pantallaJuego = new PantallaJuego(panelJuego);
+		pantallaJuego.inicializarPantalla();
+		panelJuego.setPantallaActual(pantallaJuego);
 
 	}
 

@@ -53,12 +53,10 @@ public class PantallaJuego implements Pantalla {
 			"imagenesSpaceInvaders/Protecciones/ProteccionPocoDañada.PNG",
 			"imagenesSpaceInvaders/Protecciones/ProteccionDañada1.PNG",
 			"imagenesSpaceInvaders/Protecciones/ProteccionMinima.PNG" };
-	String[] parejasMarcianosFR = { "imagenesSpaceInvaders/Marcianos/M1.PNG",
-			"imagenesSpaceInvaders/Marcianos/M2.PNG" };
-	String[] parejasMarcianosSR = { "imagenesSpaceInvaders/Marcianos/M4.PNG",
-			"imagenesSpaceInvaders/Marcianos/M3.PNG", };
-	String[] parejasMarcianosTR = { "imagenesSpaceInvaders/Marcianos/M5.PNG",
-			"imagenesSpaceInvaders/Marcianos/M6.PNG" };
+	String[] parejasMarcianos = { "imagenesSpaceInvaders/Marcianos/M1.PNG", "imagenesSpaceInvaders/Marcianos/M2.PNG",
+			"imagenesSpaceInvaders/Marcianos/M4.PNG", "imagenesSpaceInvaders/Marcianos/M3.PNG",
+			"imagenesSpaceInvaders/Marcianos/M5.PNG", "imagenesSpaceInvaders/Marcianos/M6.PNG" };
+
 	String bossMarcianos = "imagenesSpaceInvaders/Marcianos/MBoss.PNG";
 
 	// Limites de la pantalla de juego
@@ -143,47 +141,82 @@ public class PantallaJuego implements Pantalla {
 
 	public void generarMarcianitos() {
 		String aux = "";
-		for (int i = 0; i < 6; i++) {
-			int rd =new Random().nextInt(2);
-			for (int j = 0; j < 4; j++) {
-				switch (j) {
-				case 0:
-					aux = bossMarcianos;
-					break;
-				case 1:
-					aux = parejasMarcianosFR[rd];
-					break;
-				case 2:
-					aux = parejasMarcianosSR[rd];
-					break;
-				case 3:
-					aux = parejasMarcianosTR[rd];
-					break;
-				}
-				Sprite creador = new Sprite(anchoSprite, anchoSprite, liderMarciano.getPosX(), liderMarciano.getPosY(),
-						(80 * i), (70 * j), aux);
-				asignarPuntuacion(j, creador);
-				bloqueMarcianitos.add(creador);
-			}
+		int posXi = izquierda + 5;
+		int posYi = arriba + 5;
+		int separacion = anchoSprite * 2;
+		int velX = 3;
+
+		for (int i = 0; i < 24; i++) {
+			aux = asignarImagen(i);
+			Sprite creador = new Sprite(anchoSprite, anchoSprite, posXi + (separacion * (i % 6)),
+					posYi + (separacion * (i / 6)), velX, 0, aux);
+			asignarPuntuacion(i, creador);
+			bloqueMarcianitos.add(creador);
+
 		}
 	}
 
+	private String asignarImagen(int i) {
+		int rd = new Random().nextInt(6);
+		String aux = "";
+		switch (i) {
+		case 0:
+			aux = bossMarcianos;
+			break;
+		case 1:
+			aux = bossMarcianos;
+			break;
+		case 2:
+			aux = bossMarcianos;
+			break;
+		case 3:
+			aux = bossMarcianos;
+			break;
+		case 4:
+			aux = bossMarcianos;
+			break;
+		case 5:
+			aux = bossMarcianos;
+			break;
+		default:
+			aux = parejasMarcianos[rd];
+			break;
+		}
+		return aux;
+	}
+
 	private void asignarPuntuacion(int j, Sprite creador) {
+		int rd = new Random().nextInt(10);
 		switch (j) {
 		case 0:
 			creador.setPuntuacion(55);
 			creador.setVida(2);
 			break;
 		case 1:
-			creador.setPuntuacion(40);
+			creador.setPuntuacion(55);
+			creador.setVida(2);
 			break;
 		case 2:
-			creador.setPuntuacion(30);
+			creador.setPuntuacion(55);
+			creador.setVida(2);
 			break;
 		case 3:
-			creador.setPuntuacion(20);
+			creador.setPuntuacion(55);
+			creador.setVida(2);
+			break;
+		case 4:
+			creador.setPuntuacion(55);
+			creador.setVida(2);
+			break;
+		case 5:
+			creador.setPuntuacion(55);
+			creador.setVida(2);
+			break;
+		default:
+			creador.setPuntuacion(15 + rd);
 			break;
 		}
+
 	}
 
 	@Override
@@ -191,7 +224,6 @@ public class PantallaJuego implements Pantalla {
 		g.drawImage(imagenRescaladaTrasFondo, izquierda - 45, arriba - 45, null);
 		// Pintamos los marcianitos:
 
-		liderMarciano.pintarSpriteEnMundo(g);
 		for (int i = 0; i < bloqueMarcianitos.size(); i++) {
 			bloqueMarcianitos.get(i).pintarSpriteEnMundo(g);
 
@@ -241,6 +273,29 @@ public class PantallaJuego implements Pantalla {
 	private void rellenarFondo(Graphics g) {
 		g.drawImage(imagenRescalada, 0, 0, null);
 
+	}
+
+	public int getMarcianoIzq() {
+		int posIzquierda = bloqueMarcianitos.get(0).getPosX();
+		for (Sprite sprite : bloqueMarcianitos) {
+			if (sprite.getPosX() < posIzquierda) {
+				posIzquierda = sprite.getPosX();
+			}
+		}
+		return posIzquierda;
+	}
+
+	public int getMarcianoDer() {
+		int posderecha=0;
+		if (bloqueMarcianitos.size()!=0) {
+			posderecha = bloqueMarcianitos.get(0).getPosX() + anchoSprite;
+			for (Sprite sprite : bloqueMarcianitos) {
+				if (sprite.getPosX() + anchoSprite > posderecha) {
+					posderecha = sprite.getPosX() + anchoSprite;
+				}
+			} 
+		}
+		return posderecha;
 	}
 
 	@Override
@@ -296,9 +351,22 @@ public class PantallaJuego implements Pantalla {
 	}
 
 	private void moverSprites() {
-//Solucionar Movimiento de los sprites
-		liderMarciano.moverSprite(izquierda, derecha, bloqueMarcianitos);
+		for (Sprite sprite : bloqueMarcianitos) {
+			sprite.moverSprite(izquierda, derecha);
+		}
 
+		if (getMarcianoDer() >= anchoPanelJuego + izquierda) {
+			for (Sprite sprite : bloqueMarcianitos) {
+				sprite.setVelocidadX(-1 * (Math.abs(3) + 1));
+				sprite.setPosY(sprite.getPosY() + 5);
+			}
+		}
+		if (getMarcianoIzq() <= izquierda) {
+			for (Sprite sprite : bloqueMarcianitos) {
+				sprite.setVelocidadX((Math.abs(3) + 1));
+				sprite.setPosY(sprite.getPosY() + 5);
+			}
+		}
 		if (disparo != null) {
 			disparo.moverSprite();
 			if (disparo.getPosY() + disparo.getAlto() <= arriba) {
