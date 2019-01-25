@@ -1,6 +1,7 @@
 package Pantallas;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ComponentEvent;
@@ -34,7 +35,13 @@ public class PantallaJuego implements Pantalla {
 	ArrayList<Sprite> proteccion;
 	ArrayList<Sprite> bloqueMarcianitos;
 	int contadorDisparoMarcianos = 0;
-
+	// Vidas nave
+	int contadorVidas;
+	ArrayList<Sprite> vidasNave;
+	// Puntuacion jugador
+	int puntuacion;
+	Color colorLetra;
+	Font fuenteIncial;
 	// Imagenes fondo y trasFondo
 	Image imagenRescalada;
 	Image imagenRescaladaTrasFondo;
@@ -75,6 +82,8 @@ public class PantallaJuego implements Pantalla {
 		altoPanelJuego = abajo - arriba;
 		System.out.println("Limite derecho: " + derecha);
 		System.out.println("Limite Izquierdo: " + izquierda);
+		System.out.println("limite Arriba: " + arriba);
+		System.out.println("limite abajo:" + abajo);
 		System.out.println("Ancho del mapa: " + anchoPanelJuego);
 		System.out.println("Alto del mapa: " + altoPanelJuego);
 	}
@@ -83,20 +92,43 @@ public class PantallaJuego implements Pantalla {
 	public void inicializarPantalla() {
 		bloqueMarcianitos = new ArrayList<>();
 		proteccion = new ArrayList<>();
+		vidasNave = new ArrayList<>();
 		try {
 			imagenFondo = ImageIO.read(new File("imagenesSpaceInvaders/FondoJuegoBueno.PNG"));
 			trasFondo = ImageIO.read(new File("imagenesSpaceInvaders/fondoMapa.jpg"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		nave = new Sprite(40, 40, altoPanelJuego, abajo, "ImagenesSpaceInvaders/naves/Nave1.PNG");
-		liderMarciano = new Sprite(anchoSprite, anchoSprite, 85 + izquierda, 70 + arriba, 0, 0);
+		inicializarNave();
+		inicializarVidasNave();
+		liderMarciano = new Sprite(anchoSprite, anchoSprite, 1 + izquierda, 1 + arriba, 3, 0);
 		generarMarcianitos();
 		generarProtecciones();
+		puntuacion();
 		rescalarImagen();
-
 		rescalarImagenFondo();
 
+	}
+
+	private void puntuacion() {
+		fuenteIncial = new Font("Arial", Font.BOLD, 40);
+		colorLetra = Color.GREEN;
+		puntuacion = 0;
+	}
+
+	private void inicializarVidasNave() {
+		for (int i = 0; i < 3; i++) {
+			Sprite vida = new Sprite(40, 40, (panelJuego.getWidth() - (anchoSprite * i) - 100),
+					panelJuego.getHeight() / 100 * 4, "ImagenesSpaceInvaders/naves/Nave1.PNG");
+			vidasNave.add(vida);
+		}
+		contadorVidas = vidasNave.size();
+
+	}
+
+	private void inicializarNave() {
+		nave = new Sprite(40, 40, altoPanelJuego, abajo, "ImagenesSpaceInvaders/naves/Nave1.PNG");
+		nave.setVida(3);
 	}
 
 	private void generarProtecciones() {
@@ -112,26 +144,45 @@ public class PantallaJuego implements Pantalla {
 	public void generarMarcianitos() {
 		String aux = "";
 		for (int i = 0; i < 6; i++) {
+			int rd =new Random().nextInt(2);
 			for (int j = 0; j < 4; j++) {
 				switch (j) {
 				case 0:
 					aux = bossMarcianos;
 					break;
 				case 1:
-					aux = parejasMarcianosFR[0];
+					aux = parejasMarcianosFR[rd];
 					break;
 				case 2:
-					aux = parejasMarcianosSR[0];
+					aux = parejasMarcianosSR[rd];
 					break;
 				case 3:
-					aux = parejasMarcianosTR[0];
+					aux = parejasMarcianosTR[rd];
 					break;
 				}
-				Sprite creador = new Sprite(anchoSprite, anchoSprite, (80*i)+1+izquierda,
-						liderMarciano.getPosY()*j , aux);
-
+				Sprite creador = new Sprite(anchoSprite, anchoSprite, liderMarciano.getPosX(), liderMarciano.getPosY(),
+						(80 * i), (70 * j), aux);
+				asignarPuntuacion(j, creador);
 				bloqueMarcianitos.add(creador);
 			}
+		}
+	}
+
+	private void asignarPuntuacion(int j, Sprite creador) {
+		switch (j) {
+		case 0:
+			creador.setPuntuacion(55);
+			creador.setVida(2);
+			break;
+		case 1:
+			creador.setPuntuacion(40);
+			break;
+		case 2:
+			creador.setPuntuacion(30);
+			break;
+		case 3:
+			creador.setPuntuacion(20);
+			break;
 		}
 	}
 
@@ -139,14 +190,17 @@ public class PantallaJuego implements Pantalla {
 	public void pintarPantalla(Graphics g) {
 		g.drawImage(imagenRescaladaTrasFondo, izquierda - 45, arriba - 45, null);
 		// Pintamos los marcianitos:
+
 		liderMarciano.pintarSpriteEnMundo(g);
 		for (int i = 0; i < bloqueMarcianitos.size(); i++) {
 			bloqueMarcianitos.get(i).pintarSpriteEnMundo(g);
 
 		}
+		// pintamos el disparo de la nave
 		if (disparo != null) {
 			disparo.pintarSpriteEnMundo(g);
 		}
+		// Pintamos el disparo del marciano
 		if (disparoMarciano != null) {
 			disparoMarciano.pintarSpriteEnMundo(g);
 		}
@@ -165,9 +219,23 @@ public class PantallaJuego implements Pantalla {
 		} else {
 			nave.pintarSpriteEnMundo(g);
 		}
-
+		// Pintamos el marco del juego
 		rellenarFondo(g);
+		g.setFont(fuenteIncial);
+		g.setColor(colorLetra);
+		g.drawString("VIDAS: ", 688, panelJuego.getHeight() / 100 * 8);
+		for (Sprite sprite : vidasNave) {
+			sprite.pintarSpriteEnMundo(g);
+		}
+		g.setFont(fuenteIncial);
+		g.setColor(colorLetra);
+		g.drawString("Puntuacion: " + puntuacionPlayer(), panelJuego.getWidth() / 2 - 500,
+				panelJuego.getHeight() / 100 * 10);
 
+	}
+
+	private int puntuacionPlayer() {
+		return puntuacion;
 	}
 
 	private void rellenarFondo(Graphics g) {
@@ -180,8 +248,10 @@ public class PantallaJuego implements Pantalla {
 
 		comprobarColision();
 		comprobarColisionNave();
+		comprobarDisparoProteccion();
 		moverSprites();
 		disparoMarcianito();
+
 	}
 
 	private void disparoMarcianito() {
@@ -192,7 +262,7 @@ public class PantallaJuego implements Pantalla {
 						bloqueMarcianitos.get(rd).getAlto(),
 						bloqueMarcianitos.get(rd).getPosX() + bloqueMarcianitos.get(rd).getAncho() / 4,
 						bloqueMarcianitos.get(rd).getPosY(), 0, +15,
-						"ImagenesSpaceInvaders/Disparos/disparoMarcianitos.PNG");
+						"ImagenesSpaceInvaders/Disparos/disparoMarcianito.PNG");
 				contadorDisparoMarcianos = 0;
 			}
 			contadorDisparoMarcianos++;
@@ -210,14 +280,24 @@ public class PantallaJuego implements Pantalla {
 			}
 		}
 
+		if (disparoMarciano != null) {
+			if (nave.colisiona(disparoMarciano)) {
+				disparoMarciano = null;
+				nave.setVida(nave.getVida() - 1);
+				vidasNave.remove(contadorVidas - 1);
+				contadorVidas--;
+				if (nave.getVida() == 0) {
+					PantallaPerder pantallaMuerte = new PantallaPerder(panelJuego);
+					pantallaMuerte.inicializarPantalla();
+					panelJuego.setPantallaActual(pantallaMuerte);
+				}
+			}
+		}
 	}
 
 	private void moverSprites() {
-
-		liderMarciano.moverSprite(derecha, izquierda);
-//		for (Sprite sprite : bloqueMarcianitos) {
-//			sprite.setPosX(liderMarciano.getPosX());
-//		}
+//Solucionar Movimiento de los sprites
+		liderMarciano.moverSprite(izquierda, derecha, bloqueMarcianitos);
 
 		if (disparo != null) {
 			disparo.moverSprite();
@@ -227,8 +307,38 @@ public class PantallaJuego implements Pantalla {
 		}
 		if (disparoMarciano != null) {
 			disparoMarciano.moverSprite();
-			if (disparoMarciano.getPosY() + disparoMarciano.getAlto() > abajo) {
+			if (disparoMarciano.getPosY() + disparoMarciano.getAlto() > panelJuego.getHeight() - 100) {
 				disparoMarciano = null;
+			}
+		}
+	}
+
+	public void comprobarDisparoProteccion() {
+		for (int i = 0; i < proteccion.size() && disparo != null; i++) {
+
+			if (proteccion.get(i).colisiona(disparo)) {
+				disparo = null;
+				proteccion.get(i).setContadorDisparo(proteccion.get(i).getContadorDisparo() + 1);
+				switch (proteccion.get(i).getContadorDisparo()) {
+				case 3:
+					proteccion.get(i).setContadorDisparo(0);
+					proteccion.remove(i);
+					break;
+				}
+			}
+		}
+		// separar en metodos
+		for (int i = 0; i < proteccion.size() && disparoMarciano != null; i++) {
+
+			if (proteccion.get(i).colisiona(disparoMarciano)) {
+				disparoMarciano = null;
+				proteccion.get(i).setContadorDisparo(proteccion.get(i).getContadorDisparo() + 1);
+				switch (proteccion.get(i).getContadorDisparo()) {
+				case 3:
+					proteccion.get(i).setContadorDisparo(0);
+					proteccion.remove(i);
+					break;
+				}
 			}
 		}
 	}
@@ -238,7 +348,13 @@ public class PantallaJuego implements Pantalla {
 		for (int i = 0; i < bloqueMarcianitos.size() && disparo != null; i++) {
 			if (bloqueMarcianitos.get(i).colisiona(disparo)) {
 				disparo = null;
-				bloqueMarcianitos.remove(i);
+				if (bloqueMarcianitos.get(i).getVida() != 0) {
+					bloqueMarcianitos.get(i).setVida(bloqueMarcianitos.get(i).getVida() - 1);
+				} else {
+					puntuacion += bloqueMarcianitos.get(i).getPuntuacion();
+					bloqueMarcianitos.remove(i);
+
+				}
 				if (bloqueMarcianitos.size() == 0) {
 					PantallaGanador pantallaGanador = new PantallaGanador(panelJuego);
 					pantallaGanador.inicializarPantalla();
@@ -255,33 +371,6 @@ public class PantallaJuego implements Pantalla {
 				}
 			}
 		}
-		for (int i = 0; i < proteccion.size() && disparo != null; i++) {
-
-			if (proteccion.get(i).colisiona(disparo)) {
-				disparo = null;
-				proteccion.get(i).setContadorDisparo(proteccion.get(i).getContadorDisparo() + 1);
-				switch (proteccion.get(i).getContadorDisparo()) {
-				case 3:
-					proteccion.get(i).setContadorDisparo(0);
-					proteccion.remove(i);
-					break;
-				}
-			}
-		}
-		for (int i = 0; i < proteccion.size() && disparoMarciano != null; i++) {
-
-			if (proteccion.get(i).colisiona(disparoMarciano)) {
-				disparoMarciano = null;
-				proteccion.get(i).setContadorDisparo(proteccion.get(i).getContadorDisparo() + 1);
-				switch (proteccion.get(i).getContadorDisparo()) {
-				case 3:
-					proteccion.get(i).setContadorDisparo(0);
-					proteccion.remove(i);
-					break;
-				}
-			}
-		}
-
 	}
 
 	@Override

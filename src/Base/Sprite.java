@@ -28,28 +28,28 @@ public class Sprite {
 	// Variables para la velocidad
 	private int velocidadX;
 	private int velocidadY;
-	//variables de extra velocidad
-	 int extraVelX;
-	 int extraVelY;
+	// variables de extra velocidad
+	int extraVelX;
+	int extraVelY;
 	// ruta imagen SpriteAsteriod
 	private String rutaImagen;
 	private BufferedImage imagenSprite;
 	private Image imagenSpriteReescalado;
 	// contador de rebotes del sprite
 	int contadorDisparo = 0;
-
+	//_Vida de la nave
+	int vida;
+	//Puntuacion de los marcianitos
+	int puntuacion;
+	
 	/**
 	 * Constructor simple para un Sprite sin imagen y sin velocidad.
 	 * 
-	 * @param ancho
-	 *            Ancho que ocupa el Sprite (en pixels)
-	 * @param alto
-	 *            Altura que ocupa el Sprite (en pixels)
-	 * @param posX
-	 *            posición horizontal del sprite en el mundo.
-	 * @param posY
-	 *            posición vertical del Sprite en el mundo. El origen se sitúa en
-	 *            la parte superior.
+	 * @param ancho Ancho que ocupa el Sprite (en pixels)
+	 * @param alto  Altura que ocupa el Sprite (en pixels)
+	 * @param posX  posición horizontal del sprite en el mundo.
+	 * @param posY  posición vertical del Sprite en el mundo. El origen se sitúa
+	 *              en la parte superior.
 	 */
 	public Sprite(int ancho, int alto, int posX, int posY, String rutaImagen) {
 		this.ancho = ancho;
@@ -68,34 +68,45 @@ public class Sprite {
 		this.imagenSpriteReescalado = imagenSpriteReescalado;
 	}
 
+	public int getVida() {
+		return vida;
+	}
+
+	public void setVida(int vida) {
+		this.vida = vida;
+	}
+
+	public int getPuntuacion() {
+		return puntuacion;
+	}
+
+	public void setPuntuacion(int puntucion) {
+		this.puntuacion = puntucion;
+	}
+
 	/**
 	 * Constructor para un Sprite sin imagen.
 	 * 
-	 * @param ancho
-	 *            Ancho que ocupa el Sprite (en pixels)
-	 * @param alto
-	 *            Altura que ocupa el Sprite (en pixels)
-	 * @param posX
-	 *            posición horizontal del sprite en el mundo.
-	 * @param posY
-	 *            posición vertical del Sprite en el mundo. El origen se sitúa en
-	 *            la parte superior.
-	 * @param extraVelX
-	 *            velocidad horizontal del Sprite.
-	 * @param extraVelY
-	 *            velocidad vertical del Sprite.
+	 * @param ancho     Ancho que ocupa el Sprite (en pixels)
+	 * @param alto      Altura que ocupa el Sprite (en pixels)
+	 * @param posX      posición horizontal del sprite en el mundo.
+	 * @param posY      posición vertical del Sprite en el mundo. El origen se
+	 *                  sitúa en la parte superior.
+	 * @param extraVelX velocidad horizontal del Sprite.
+	 * @param extraVelY velocidad vertical del Sprite.
 	 */
 	public Sprite(int ancho, int alto, int posX, int posY, int extraVelX, int extraVelY, String rutaImagen) {
 		this.ancho = ancho;
 		this.alto = alto;
-		this.posX = posX;
-		this.posY = posY;
-//		this.extraVelX = extraVelX;
-//		this.extraVelY = extraVelY;
+		this.posX = posX + extraVelX;
+		this.posY = posY + extraVelY;
+		this.extraVelX = extraVelX;
+		this.extraVelY = extraVelY;
 		this.rutaImagen = rutaImagen;
 		actualizarBuffer();
-		
+
 	}
+
 	public Sprite(int ancho, int alto, int posX, int posY, int velocidadX, int velocidadY) {
 		this.ancho = ancho;
 		this.alto = alto;
@@ -134,18 +145,23 @@ public class Sprite {
 
 	}
 
-	public void moverSprite(int derecha, int izquierda) {
+	public void moverSprite(int izquierda, int derecha, ArrayList<Sprite> bloque) {
 
-		if (getPosX() < izquierda) {// por la derecha
-
+		if (getPosX() <= izquierda) {// por la derecha
 			velocidadX = Math.abs(velocidadX);
+			for (Sprite sprite : bloque) {
+				sprite.setPosX(getPosX() + sprite.getExtraVelX());
+			}
 
-			System.out.println("Choque!!!-------");
 		}
 
-		if (getPosX() > derecha) {// por la izquierda
+		if (getPosX() >= derecha) {// por la izquierda
 			velocidadX = -1 * Math.abs(velocidadX);
-			setPosY(getPosY()+1);
+			setPosY(getPosY() + 1);
+			for (Sprite sprite : bloque) {
+				sprite.setPosX(getPosX() + sprite.getExtraVelX());
+				sprite.setPosY(getPosY() + sprite.getExtraVelY());
+			}
 
 		}
 
@@ -185,8 +201,7 @@ public class Sprite {
 	 * Método que pinta el Sprite en el mundo teniendo en cuenta las
 	 * características propias del Sprite.
 	 * 
-	 * @param g
-	 *            Es el Graphics del mundo que se utilizará para pintar el Sprite.
+	 * @param g Es el Graphics del mundo que se utilizará para pintar el Sprite.
 	 */
 	public void pintarSpriteEnMundo(Graphics g) {
 		g.drawImage(buffer, posX, posY, null);
@@ -276,8 +291,8 @@ public class Sprite {
 	}
 
 	public void moverSprite() {
-		posX = posX + velocidadX;
-		posY = posY + velocidadY;
+		posX = posX + extraVelX;
+		posY = posY + extraVelY;
 
 	}
 
