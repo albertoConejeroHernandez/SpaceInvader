@@ -276,27 +276,28 @@ public class PantallaJuego implements Pantalla {
 	}
 
 	public int getMarcianoIzq() {
-		int posIzquierda=0;
-		if (bloqueMarcianitos.size()!=0) {
+		int posIzquierda = 0;
+		if (bloqueMarcianitos.size() != 0) {
 			posIzquierda = bloqueMarcianitos.get(0).getPosX();
 			for (Sprite sprite : bloqueMarcianitos) {
 				if (sprite.getPosX() < posIzquierda) {
 					posIzquierda = sprite.getPosX();
 				}
 			}
-			
-		}return posIzquierda;
+
+		}
+		return posIzquierda;
 	}
 
 	public int getMarcianoDer() {
-		int posderecha=0;
-		if (bloqueMarcianitos.size()!=0) {
+		int posderecha = 0;
+		if (bloqueMarcianitos.size() != 0) {
 			posderecha = bloqueMarcianitos.get(0).getPosX() + anchoSprite;
 			for (Sprite sprite : bloqueMarcianitos) {
 				if (sprite.getPosX() + anchoSprite > posderecha) {
 					posderecha = sprite.getPosX() + anchoSprite;
 				}
-			} 
+			}
 		}
 		return posderecha;
 	}
@@ -358,7 +359,7 @@ public class PantallaJuego implements Pantalla {
 			sprite.moverSprite(izquierda, derecha);
 		}
 
-		if (getMarcianoDer() >= anchoPanelJuego + izquierda) {
+		if (getMarcianoDer() >= derecha) {
 			for (Sprite sprite : bloqueMarcianitos) {
 				sprite.setVelocidadX(-1 * (Math.abs(3) + 1));
 				sprite.setPosY(sprite.getPosY() + 5);
